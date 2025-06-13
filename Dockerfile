@@ -1,20 +1,22 @@
 FROM python:3.9
 
-WORKDIR /app/backend
+# Set working directory to where manage.py is
+WORKDIR /app
 
-COPY requirements.txt /app/backend
+# Copy only requirements and install dependencies first (layer caching)
+COPY requirements.txt .
+
 RUN apt-get update \
-    && apt-get upgrade -y \
     && apt-get install -y gcc default-libmysqlclient-dev pkg-config \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && pip install mysqlclient \
+    && pip install --no-cache-dir -r requirements.txt
 
+# Copy entire project
+COPY . .
 
-# Install app dependencies
-RUN pip install mysqlclient
-RUN pip install --no-cache-dir -r requirements.txt
-
-COPY . /app/backend
-
+# Expose Django app port
 EXPOSE 8000
-#RUN python manage.py migrate
-#RUN python manage.py makemigrations
+
+# Start Django app
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
