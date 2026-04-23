@@ -51,7 +51,7 @@ pipeline {
             steps{
                 echo "This is for deploying the code."
                 sh "docker rm -f \$(docker ps -q --filter publish=8000) || true"
-                sh "docker run -d -p 8000:8000 notes-app:latest"
+                sh "docker run -d -p 9000:9000 notes-app:latest"
                 echo "app running on 8081"
             }
         }
